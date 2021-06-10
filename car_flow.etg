@@ -1,0 +1,9 @@
+[Version Information]
+Flow Version = 0
+[DataFlow SourceTargetView]
+DataFlowChildWindow(sql) = 0,513,25,561,73,0,0
+DataFlowChildWindow(src:car:t1) = 0,388,25,436,73,0,0
+DataFlowChildWindow(trg:target01:1) = 0,638,25,686,73,0,0
+[Dependency View]
+Coord(Item,START_PRC) = 120,30
+Coord(Item,DEP_MAIN) = 240,30

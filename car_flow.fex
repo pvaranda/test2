@@ -1,0 +1,88 @@
+-*DM_JOB_TYPE=1 
+-*DM_USERID=dev1 
+-*DM_CLIENT_RELEASE_GEN=R728207D_1936 
+-*DM_SERVER_RELEASE_GEN=R728207D_1936 
+ 
+-*************************************************** 
+ 
+-:START_PRC 
+SET PANEL=9999 
+SET MORE=OFF 
+SET 2PARTNAME=ON 
+-RUN 
+ 
+-*[Variables to Control Request] 
+-SET &&CM__TARGET = 'target01'; 
+-SET &&CM__AUTHOR = 'dev1'; 
+-SET &&CM__REQUEST = '&FOCFEXNAME.EVAL'; 
+-SET &&CM__RETURN = 0; 
+-SET &&CM__FOCCPU = &FOCCPU.EVAL; 
+-TYPE  (ICM18122) Request - &FOCFEXNAME (Owner: dev1) submitted. 
+-GOTO :DEP_MAIN; 
+ 
+-:DEP_MAIN 
+-TYPE  (ICM18741) dev1_local/target01 type MS SQL Server OLE DB/AzureDB New target 
+ENGINE SQLMSS SET BULKLOAD OFF 
+-TYPE  (ICM18743) Starting Load 
+ 
+SQL SET UPCASE=OFF; END 
+SQL 
+SELECT 
+   T1.COUNTRY , 
+   T1.CAR , 
+   T1.MODEL , 
+   T1.BODYTYPE 
+FROM 
+   car T1 
+; 
+ 
+TABLE 
+ON TABLE SET PAGE NOPAGE 
+ON TABLE SET HOLDATTRS CUBE 
+ON TABLE SET HOLDLIST NOFOCLIST 
+ON TABLE SET EMPTYREPORT ON 
+ON TABLE SET SHORTPATH SQL 
+ON TABLE HOLD 
+ NOKEYS AS  
+dev1_local/target01 
+ 
+ TABLENAME 'target01' 
+ CONNECTION 'CSSPXV-W2K16-TRUSTED-TestEnv' FORMAT SQLMSS 
+END 
+-RUN 
+ 
+-TYPE  (ICM18744) Ending Load 
+-RUN 
+-SET &&CM__RETURN = IF &FOCERRNUM EQ 14104 THEN 0 ELSE &FOCERRNUM; 
+-IF (&&CM__RETURN NE 0) GOTO :ENDJOB; 
+ 
+-IF (&SQLAPT EQ 'APT') GOTO :SKIPHOLD; 
+ 
+-TYPE  (ICM18440) Request will process data via NON-Pass Through (NON-APT) 
+ 
+-:SKIPHOLD 
+ 
+ 
+-:ENDJOB 
+-TYPE  (ICM18040) Return Code = &&CM__RETURN 
+ 
+SQL SET UPCASE=ON; END 
+SQL SQLMSS 
+COMMIT WORK; 
+END 
+-RUN 
+ 
+-TYPE  (ICM18076) Request: &FOCFEXNAME - finished processing 
+ 
+-SET &&CM__FOCCPU = &FOCCPU.EVAL - &&CM__FOCCPU; 
+-TYPE  (ICM18007) CPU Time : &&CM__FOCCPU 
+ 
+-*[Main Condition] 
+-*[Main End] 
+ 
+-*[Dependence] 
+-:ENDDEP 
+SET PANEL=0 
+SET MORE=ON 
+SET 2PARTNAME=OFF 
+-RUN 
